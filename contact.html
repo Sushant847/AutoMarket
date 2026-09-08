@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact | AutoMarket</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/polish.css">
+  <link rel="stylesheet" href="css/ux.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">Auto<em>Market</em></a>
+      <nav class="nav" id="nav"></nav>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <main id="main">
+    <div class="page-bar"><div class="container">
+      <h1>Contact us</h1>
+      <p>Questions about AutoMarket or about listing a car. For a specific vehicle, use Book a viewing on that listing.</p>
+    </div></div>
+    <div class="container page-wrap" style="max-width:560px">
+      <div class="card-panel">
+        <form id="contactForm">
+          <div class="filter-group"><label for="cName">Name</label><input class="form-control" id="cName" required></div>
+          <div class="filter-group"><label for="cEmail">Email</label><input class="form-control" id="cEmail" type="email" required></div>
+          <div class="filter-group"><label for="cTopic">Topic</label>
+            <select class="form-control" id="cTopic">
+              <option>Buying a car</option>
+              <option>Selling a car</option>
+              <option>Book a viewing</option>
+              <option>Something else</option>
+            </select>
+          </div>
+          <div class="filter-group"><label for="cMsg">Message</label><textarea class="form-control" id="cMsg" rows="4" required></textarea></div>
+          <button class="btn-search" type="submit" style="width:100%;justify-content:center">Send message</button>
+        </form>
+        <p class="alert alert-warn" style="margin-top:12px">This prototype does not transmit enquiries to a live server. The form demonstrates client-side interaction only.</p>
+        <p id="contactDone" class="alert alert-ok" hidden style="margin-top:12px"></p>
+      </div>
+    </div>
+  </main>
+  <footer class="footer"><div class="container"><div class="footer-bottom">© 2026 AutoMarket</div></div></footer>
+  <script src="js/vehicles.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    document.getElementById("contactForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var subject = encodeURIComponent("AutoMarket: " + document.getElementById("cTopic").value);
+      var body = encodeURIComponent(document.getElementById("cMsg").value + "\n\nFrom: " + document.getElementById("cName").value + "\n" + document.getElementById("cEmail").value);
+      document.getElementById("contactDone").hidden = false;
+      document.getElementById("contactDone").textContent = "Message recorded on this page only. Nothing was emailed.";
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>

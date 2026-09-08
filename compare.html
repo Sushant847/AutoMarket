@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compare Cars | AutoMarket</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/polish.css">
+  <link rel="stylesheet" href="css/ux.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">Auto<em>Market</em></a>
+      <nav class="nav" id="nav">
+        <a href="index.html">Home</a>
+        <a href="browse.html">Browse cars</a>
+        <a href="compare.html" class="active">Compare</a>
+        <a href="insights.html">Insights</a>
+        <a href="about.html">About</a>
+      </nav>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="page-bar">
+      <div class="container">
+        <h1>Compare cars</h1>
+        <p>Select 2 or 3 vehicles and compare price, age, kilometres and key specs side-by-side.</p>
+      </div>
+    </div>
+    <div class="container page-wrap">
+      <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:20px;margin-bottom:20px;">
+        <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Filter the lists</label>
+        <input id="cmpQ" type="search" placeholder="Type a brand or model to narrow the lists" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;margin-bottom:12px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+          <div>
+            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Vehicle 1</label>
+            <select id="c1" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.9rem;"><option value="">Select a car</option></select>
+          </div>
+          <div>
+            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Vehicle 2</label>
+            <select id="c2" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.9rem;"><option value="">Select a car</option></select>
+          </div>
+          <div>
+            <label style="font-size:0.8rem;font-weight:600;display:block;margin-bottom:5px;">Vehicle 3 <span style="color:#6b7280;font-weight:400;">(optional)</span></label>
+            <select id="c3" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:0.9rem;"><option value="">Select a car</option></select>
+          </div>
+        </div>
+        <button class="btn-search" id="btnCmp" style="margin-top:14px;"><i class="bi bi-arrow-left-right"></i> Compare selected</button>
+      </div>
+      <div id="cmpOut"></div>
+      <p style="font-size:0.85rem;color:#6b7280;margin-top:16px;">Green cells highlight lower price, lower kilometres or newer year. We don’t pick a “best” car — use the evidence for your own decision.</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand"><strong>AutoMarket</strong><p>Research used cars with real Australian data.</p></div>
+        <div class="footer-col"><h4>Tools</h4><a href="browse.html">Browse</a><a href="compare.html">Compare</a><a href="insights.html">Insights</a></div>
+        <div class="footer-col"><h4>Help</h4><a href="about.html">About</a></div>
+      </div>
+      <div class="footer-bottom">© 2026 AutoMarket · ICT807 Assessment 2</div>
+    </div>
+  </footer>
+
+  <script src="js/vehicles.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      function fillLists(q) {
+        const list = vehicleData.filter(v => matchesQuery(v, q));
+        const opts = '<option value="">Select a car</option>' + list.map(v =>
+          `<option value="${v.id}">${escapeHtml(v.brand)} ${escapeHtml(v.model)} (${v.year}) – ${formatPrice(v.price)}</option>`
+        ).join('');
+        ['c1','c2','c3'].forEach(id => { document.getElementById(id).innerHTML = opts; });
+      }
+      fillLists('');
+      const qBox = document.getElementById('cmpQ');
+      if (qBox) qBox.addEventListener('input', () => fillLists(qBox.value));
+      const pre = new URLSearchParams(location.search).get('id');
+      if (pre) document.getElementById('c1').value = pre;
+
+      document.getElementById('btnCmp').addEventListener('click', () => {
+        const ids = ['c1','c2','c3'].map(id => parseInt(document.getElementById(id).value)).filter(Boolean);
+        const cars = ids.map(id => vehicleData.find(v => v.id === id)).filter(Boolean);
+        if (cars.length < 2) { alert('Please select at least 2 cars.'); return; }
+
+        const fields = [
+          {k:'brand',l:'Brand'},{k:'model',l:'Model'},{k:'year',l:'Year'},
+          {k:'price',l:'Price',f:formatPrice},{k:'kilometres',l:'Kilometres',f:formatKm},
+          {k:'fuelType',l:'Fuel type'},{k:'transmission',l:'Transmission'},
+          {k:'bodyType',l:'Body type'},{k:'engine',l:'Engine'},
+          {k:'driveType',l:'Drive type'},{k:'fuelConsumption',l:'Fuel use'},
+          {k:'doors',l:'Doors'},{k:'seats',l:'Seats'},{k:'location',l:'Location'}
+        ];
+
+        let h = '<div style="overflow-x:auto;"><table class="cmp-table"><thead><tr><th>Feature</th>';
+        cars.forEach(c => h += `<th>${escapeHtml(c.brand)} ${escapeHtml(c.model)}</th>`);
+        h += '</tr></thead><tbody>';
+        fields.forEach(f => {
+          h += `<tr><td><strong>${f.l}</strong></td>`;
+          cars.forEach(c => {
+            let cls = '';
+            if (f.k === 'price') {
+              const min = Math.min(...cars.map(x => x.price || Infinity));
+              if (c.price === min) cls = 'better';
+            }
+            if (f.k === 'kilometres' && c.kilometres != null) {
+              const vals = cars.filter(x => x.kilometres != null).map(x => x.kilometres);
+              if (vals.length && c.kilometres === Math.min(...vals)) cls = 'better';
+            }
+            if (f.k === 'year') {
+              const max = Math.max(...cars.map(x => x.year || 0));
+              if (c.year === max) cls = 'better';
+            }
+            const val = f.f ? f.f(c[f.k]) : (c[f.k] || 'N/A');
+            h += `<td class="${cls}">${val}</td>`;
+          });
+          h += '</tr>';
+        });
+        h += '</tbody></table></div>';
+        document.getElementById('cmpOut').innerHTML = h;
+      });
+    });
+  </script>
+</body>
+</html>

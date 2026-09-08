@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Market Insights | AutoMarket</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/polish.css">
+  <link rel="stylesheet" href="css/ux.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">Auto<em>Market</em></a>
+      <nav class="nav" id="nav">
+        <a href="index.html">Home</a>
+        <a href="browse.html">Browse cars</a>
+        <a href="compare.html">Compare</a>
+        <a href="insights.html" class="active">Insights</a>
+        <a href="about.html">About</a>
+      </nav>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="page-bar">
+      <div class="container">
+        <h1>Market insights</h1>
+        <p>Patterns from the Australian vehicle dataset — useful before you start shortlisting.</p>
+      </div>
+    </div>
+    <div class="container page-wrap">
+      <div class="stats-row" id="iStats"></div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>Which brands have the most listings?</h3>
+          <canvas id="chartBrand" height="220"></canvas>
+          <p style="font-size:0.8rem;color:#6b7280;margin-top:10px;">Based on the loaded dataset. More listings often means more choice when comparing prices.</p>
+        </div>
+        <div class="chart-card">
+          <h3>How are fuel types distributed?</h3>
+          <canvas id="chartFuel" height="220"></canvas>
+          <p style="font-size:0.8rem;color:#6b7280;margin-top:10px;">Helps you see how common petrol, diesel and hybrid options are in this data.</p>
+        </div>
+        <div class="chart-card">
+          <h3>Which body types are most common?</h3>
+          <canvas id="chartBody" height="220"></canvas>
+          <p style="font-size:0.8rem;color:#6b7280;margin-top:10px;">SUVs, hatchbacks and utes dominate many Australian used-car searches.</p>
+        </div>
+        <div class="chart-card">
+          <h3>How does average price change by year?</h3>
+          <canvas id="chartYear" height="220"></canvas>
+          <p style="font-size:0.8rem;color:#6b7280;margin-top:10px;">In this dataset, newer model years generally show higher average asking prices.</p>
+        </div>
+      </div>
+
+      <div style="margin-top:28px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:20px;">
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:8px;">How to use these insights</h3>
+        <ul style="margin-left:18px;color:#4b5563;font-size:0.95rem;line-height:1.7;">
+          <li>Use brand and body-type charts to see where you have the most choice.</li>
+          <li>Use the year–price chart to set a realistic budget for the age of car you want.</li>
+          <li>Fuel-type mix can affect running costs — factor that in before you buy.</li>
+          <li>These are patterns in the dataset, not guarantees about any single car.</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand"><strong>AutoMarket</strong><p>Research used cars with real Australian data.</p></div>
+        <div class="footer-col"><h4>Tools</h4><a href="browse.html">Browse</a><a href="compare.html">Compare</a><a href="insights.html">Insights</a></div>
+        <div class="footer-col"><h4>Help</h4><a href="about.html">About</a></div>
+      </div>
+      <div class="footer-bottom">© 2026 AutoMarket · ICT807 Assessment 2</div>
+    </div>
+  </footer>
+
+  <script src="js/vehicles.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof vehicleData === 'undefined' || !vehicleData.length) {
+        document.getElementById('iStats').innerHTML = '<p>No data loaded.</p>';
+        return;
+      }
+      const prices = vehicleData.map(v => v.price).filter(Boolean);
+      const kms = vehicleData.map(v => v.kilometres).filter(k => k != null);
+      document.getElementById('iStats').innerHTML = `
+        <div class="stat-box"><div class="num">${vehicleData.length.toLocaleString()}</div><div class="label">Listings</div></div>
+        <div class="stat-box"><div class="num">${formatPrice(median(prices))}</div><div class="label">Median price</div></div>
+        <div class="stat-box"><div class="num">${formatPrice(Math.round(prices.reduce((a,b)=>a+b,0)/prices.length))}</div><div class="label">Average price</div></div>
+        <div class="stat-box"><div class="num">${kms.length ? Math.round(kms.reduce((a,b)=>a+b,0)/kms.length).toLocaleString() + ' km' : 'N/A'}</div><div class="label">Avg kilometres</div></div>
+      `;
+
+      const bc = {};
+      vehicleData.forEach(v => { bc[v.brand] = (bc[v.brand]||0)+1; });
+      const top = Object.entries(bc).sort((a,b)=>b[1]-a[1]).slice(0,8);
+      new Chart(document.getElementById('chartBrand'), {
+        type: 'bar',
+        data: { labels: top.map(x=>x[0]), datasets: [{ data: top.map(x=>x[1]), backgroundColor: '#0a0a0a', borderRadius: 4 }] },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      });
+
+      const fc = {};
+      vehicleData.forEach(v => { const f = v.fuelType || 'Other'; fc[f] = (fc[f]||0)+1; });
+      new Chart(document.getElementById('chartFuel'), {
+        type: 'doughnut',
+        data: { labels: Object.keys(fc), datasets: [{ data: Object.values(fc), backgroundColor: ['#e10600','#0a0a0a','#059669','#f59e0b','#6b7280','#d1d5db'] }] },
+        options: { plugins: { legend: { position: 'bottom' } } }
+      });
+
+      const boc = {};
+      vehicleData.forEach(v => { const b = v.bodyType || 'Other'; boc[b] = (boc[b]||0)+1; });
+      new Chart(document.getElementById('chartBody'), {
+        type: 'bar',
+        data: { labels: Object.keys(boc), datasets: [{ data: Object.values(boc), backgroundColor: '#374151', borderRadius: 4 }] },
+        options: { indexAxis: 'y', plugins: { legend: { display: false } } }
+      });
+
+      const yp = {};
+      vehicleData.forEach(v => {
+        if (v.year && v.price) { (yp[v.year] = yp[v.year] || []).push(v.price); }
+      });
+      const yrs = Object.keys(yp).map(Number).sort((a,b)=>a-b);
+      new Chart(document.getElementById('chartYear'), {
+        type: 'line',
+        data: {
+          labels: yrs,
+          datasets: [{
+            data: yrs.map(y => Math.round(yp[y].reduce((a,b)=>a+b,0)/yp[y].length)),
+            borderColor: '#e10600',
+            backgroundColor: 'rgba(225,6,0,0.08)',
+            tension: 0.3,
+            fill: true,
+            pointRadius: 3
+          }]
+        },
+        options: { plugins: { legend: { display: false } } }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Price checker | AutoMarket</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/polish.css">
+  <link rel="stylesheet" href="css/ux.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">Auto<em>Market</em></a>
+      <nav class="nav" id="nav"></nav>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <main id="main">
+    <div class="page-bar"><div class="container"><h1>Price checker</h1><p>See how an asking price sits against similar cars in this sample. This is not a valuation.</p></div></div>
+    <div class="container page-wrap" style="max-width:640px">
+      <div class="card-panel">
+        <div class="filter-group"><label for="pBrand">Brand</label><select id="pBrand" class="form-control"><option value="">Any</option></select></div>
+        <div class="filter-group"><label for="pYear">Year from</label><input id="pYear" class="form-control" type="number" placeholder="e.g. 2018"></div>
+        <div class="filter-group"><label for="pPrice">Asking price you saw ($)</label><input id="pPrice" class="form-control" type="number" placeholder="e.g. 18990"></div>
+        <button class="btn-search" id="go" type="button">Check against sample</button>
+        <div id="out" style="margin-top:16px"></div>
+      </div>
+    </div>
+  </main>
+  <footer class="footer"><div class="container"><div class="footer-bottom">© 2026 AutoMarket · ICT807</div></div></footer>
+  <script src="js/vehicles.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      getUnique('brand').forEach(b => pBrand.innerHTML += `<option>${escapeHtml(b)}</option>`);
+      go.onclick = () => {
+        const brand = pBrand.value;
+        const year = parseInt(pYear.value) || 0;
+        const ask = parseInt(pPrice.value);
+        let rows = vehicleData.filter(v => (!brand || v.brand === brand) && (!year || v.year >= year));
+        const prices = rows.map(v => v.price).filter(Boolean).sort((a,b)=>a-b);
+        if (!prices.length) { out.innerHTML = '<p class="alert alert-warn">No matching cars in the sample.</p>'; return; }
+        const mid = median(prices);
+        let note = 'Enter an asking price to compare.';
+        if (ask) {
+          if (ask < mid * 0.9) note = 'This asking price is below the sample median for your filters.';
+          else if (ask > mid * 1.1) note = 'This asking price is above the sample median. Check kilometres, options and condition.';
+          else note = 'This asking price is close to the sample median.';
+        }
+        out.innerHTML = `<div class="alert alert-info"><strong>${note}</strong><br>
+          Sample size: ${rows.length} · Median ${formatPrice(mid)} · Range ${formatPrice(prices[0])} – ${formatPrice(prices[prices.length-1])}</div>
+          <p class="muted" style="margin-top:8px;font-size:.85rem">Based only on this dataset sample. Indicative dataset comparison — not a professional valuation or true market value.</p>`;
+      };
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign up | AutoMarket</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/polish.css">
+  <link rel="stylesheet" href="css/ux.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">Auto<em>Market</em></a>
+      <nav class="nav" id="nav"></nav>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <main id="main">
+    <div class="page-bar"><div class="container"><h1>Sign up</h1><p>Create an account on this device so you can list a car.</p></div></div>
+    <div class="container page-wrap" style="max-width:440px">
+      <div class="card-panel">
+        <p class="alert alert-warn">Demo account — local browser only. Passwords stay on this device and are not secure.</p>
+        <form id="signupForm">
+          <div class="filter-group"><label for="name">Name</label><input class="form-control" id="name" required></div>
+          <div class="filter-group"><label for="email">Email</label><input class="form-control" id="email" type="email" required></div>
+          <div class="filter-group"><label for="password">Password</label><input class="form-control" id="password" type="password" required minlength="4"></div>
+          <button class="btn-search" type="submit" style="width:100%;justify-content:center">Create account</button>
+        </form>
+        <p id="signupErr" class="alert alert-warn" hidden style="margin-top:12px"></p>
+        <p style="margin-top:14px">Already have an account? <a href="login.html">Log in</a></p>
+      </div>
+    </div>
+  </main>
+  <footer class="footer"><div class="container"><div class="footer-bottom">© 2026 AutoMarket</div></div></footer>
+  <script src="js/vehicles.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const user = {
+        name: document.getElementById("name").value.trim(),
+        email: document.getElementById("email").value.trim().toLowerCase(),
+        password: document.getElementById("password").value
+      };
+      const err = document.getElementById("signupErr");
+      const users = getUsers();
+      if (users.some(u => u.email === user.email)) {
+        err.hidden = false;
+        err.textContent = "That email already has an account on this browser.";
+        return;
+      }
+      users.push(user);
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+      setSession(user);
+      location.href = "index.html";
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Details | AutoMarket</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/polish.css">
+  <link rel="stylesheet" href="css/ux.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 20px; }
+    .detail-img { background: linear-gradient(145deg,#e5e7eb,#f3f4f6); border-radius: 12px; height: 300px; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: #9ca3af; }
+    .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+    .spec-item { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; }
+    .spec-item .label { font-size: 0.75rem; color: #6b7280; }
+    .spec-item .value { font-weight: 600; font-size: 0.95rem; }
+    @media (max-width: 700px) { .detail-grid, .spec-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">Auto<em>Market</em></a>
+      <nav class="nav" id="nav">
+        <a href="index.html">Home</a>
+        <a href="browse.html">Browse cars</a>
+        <a href="compare.html">Compare</a>
+        <a href="insights.html">Insights</a>
+        <a href="about.html">About</a>
+      </nav>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <main id="main">
+    <div class="container page-wrap" id="detail"><p>Loading...</p></div>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">© 2026 AutoMarket · ICT807 Assessment 2</div>
+    </div>
+  </footer>
+  <script src="js/vehicles.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const id = new URLSearchParams(location.search).get('id');
+      const v = findVehicle(id);
+      const el = document.getElementById('detail');
+      if (!v) { el.innerHTML = '<h2>Car not found</h2><a href="browse.html">Back to browse</a>'; return; }
+      recordVisit(v.id);
+      const badge = v.usedOrNew === 'NEW' ? 'badge-new' : v.usedOrNew === 'DEMO' ? 'badge-demo' : 'badge-used';
+      const samePrices = vehicleData.filter(x => x.brand === v.brand && x.model === v.model).map(x => x.price).filter(Boolean);
+      const mid = samePrices.length ? median(samePrices) : null;
+      let priceNote = '';
+      if (mid) {
+        const tag = v.price < mid * 0.9 ? 'Below the sample median for this model' : v.price > mid * 1.1 ? 'Above the sample median for this model' : 'Close to the sample median for this model';
+        priceNote = `<div class="alert alert-info" style="margin:16px 0 0">${tag}. Median in sample: ${formatPrice(mid)} (${samePrices.length} listings).</div>`;
+      }
+      const similar = vehicleData.filter(x => x.id !== v.id && x.brand === v.brand && Math.abs((x.year||0)-(v.year||0)) <= 2).slice(0,4);
+      const similarHtml = similar.length ? `<h2 style="font-size:1.05rem;margin:24px 0 10px">Similar cars in this sample</h2><div class="car-grid">${similar.map(createCard).join('')}</div>` : '';
+      el.innerHTML = `
+        <p class="crumb"><a href="index.html">Home</a> / <a href="browse.html">Browse</a> / ${escapeHtml(v.brand)} ${escapeHtml(v.model)}</p>
+        <div class="detail-grid">
+          <div class="detail-img"><i class="bi bi-car-front-fill"></i></div>
+          <div>
+            <h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;">${escapeHtml(v.brand)} ${escapeHtml(v.model)}</h1>
+            <p style="color:#6b7280;margin:4px 0 10px;">${escapeHtml(v.title || '')}</p>
+            <div style="font-size:1.8rem;font-weight:800;margin-bottom:8px;">${formatPrice(v.price)}</div>
+            <span class="badge ${badge}">${escapeHtml(v.usedOrNew||'USED')}</span>
+            <div class="spec-grid">
+              <div class="spec-item"><div class="label">Year</div><div class="value">${v.year||'N/A'}</div></div>
+              <div class="spec-item"><div class="label">Kilometres</div><div class="value">${formatKm(v.kilometres)}</div></div>
+              <div class="spec-item"><div class="label">Fuel</div><div class="value">${escapeHtml(v.fuelType||'N/A')}</div></div>
+              <div class="spec-item"><div class="label">Transmission</div><div class="value">${escapeHtml(v.transmission||'N/A')}</div></div>
+              <div class="spec-item"><div class="label">Body type</div><div class="value">${escapeHtml(v.bodyType||'N/A')}</div></div>
+              <div class="spec-item"><div class="label">Location</div><div class="value">${escapeHtml(v.location||'N/A')}</div></div>
+              <div class="spec-item"><div class="label">Engine</div><div class="value">${escapeHtml(v.engine||'N/A')}</div></div>
+              <div class="spec-item"><div class="label">Drive</div><div class="value">${escapeHtml(v.driveType||'N/A')}</div></div>
+              <div class="spec-item"><div class="label">Doors / Seats</div><div class="value">${escapeHtml(v.doors||'N/A')} / ${escapeHtml(v.seats||'N/A')}</div></div>
+              <div class="spec-item"><div class="label">Fuel use</div><div class="value">${escapeHtml(v.fuelConsumption||'N/A')}</div></div>
+            </div>
+            <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
+              <a href="compare.html?id=${v.id}" class="btn-dark" style="padding:11px 18px;display:inline-block;">Compare this car</a>
+              <a href="price-checker.html" class="btn-outline" style="padding:11px 18px;display:inline-block;">Price checker</a>
+            </div>
+            ${priceNote}
+            <form id="enquireForm" class="card-panel" style="margin-top:18px">
+              <h2 style="font-size:1rem;margin-bottom:8px">Book a viewing</h2>
+              <p class="alert alert-info" style="margin-bottom:10px">Booking is recorded on this page only. This prototype does not email a live owner. </p>
+              <label for="enqName">Name</label>
+              <input class="form-control" id="enqName" required style="margin-bottom:8px">
+              <label for="enqEmail">Your email</label>
+              <input class="form-control" id="enqEmail" type="email" required style="margin-bottom:8px">
+              <label for="enqMsg">Message</label>
+              <textarea class="form-control" id="enqMsg" rows="3" required style="margin-bottom:10px">I would like to book a viewing for this ${escapeHtml(v.brand)} ${escapeHtml(v.model)}.</textarea>
+              <button class="btn-search" type="submit">Book appointment</button>
+            </form>
+          </div>
+        </div>
+        ${similarHtml}`;
+        const form = document.getElementById('enquireForm');
+        if (form) form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const subject = encodeURIComponent('Car enquiry: ' + v.brand + ' ' + v.model);
+          const body = encodeURIComponent(enqMsg.value + '\n\nFrom: ' + enqName.value + '\nEmail: ' + enqEmail.value + '\nPrice: ' + formatPrice(v.price));
+          alert('Viewing request saved on this page only. No email was sent.');
+        });
+    });
+  </script>
+</body>
+</html>

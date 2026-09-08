@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoMarket | Buy and sell used cars in Australia</title>
+  <meta name="description" content="Browse and compare used cars, or try listing a car. Client-side marketplace nstration.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/polish.css">
+  <link rel="stylesheet" href="css/ux.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    .hero { padding: 36px 0 32px; }
+    .hero h1 { font-size: 2rem; max-width: 520px; line-height: 1.2; }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(225,6,0,0.15);
+      color: #ff8a80;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .buy-sell {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 20px 0 24px;
+      max-width: 420px;
+    }
+    .buy-sell a {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 16px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .buy-sell a:hover { transform: translateY(-2px); }
+    .buy-sell .buy {
+      background: #e10600;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(225,6,0,0.35);
+    }
+    .buy-sell .buy:hover { background: #c40500; color: #fff; }
+    .buy-sell .sell {
+      background: #fff;
+      color: #111;
+      border: 1.5px solid rgba(255,255,255,0.3);
+    }
+    .buy-sell .sell:hover { background: #f9fafb; color: #111; }
+    .buy-sell small {
+      font-weight: 500;
+      font-size: 0.78rem;
+      opacity: 0.85;
+    }
+    .search-panel {
+      grid-template-columns: 1.3fr 1fr 1fr 1fr auto;
+      padding: 14px;
+      gap: 8px;
+    }
+    .search-field label {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .-note {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-left: 4px solid #e10600;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-top: 18px;
+      font-size: 0.88rem;
+      color: #4b5563;
+    }
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 8px 0 28px;
+    }
+    .how-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 18px 16px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .how-card .step {
+      width: 32px; height: 32px;
+      background: #0a0a0a;
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.85rem;
+      margin: 0 auto 10px;
+    }
+    .how-card h3 { font-size: 0.95rem; margin-bottom: 4px; }
+    .how-card p { font-size: 0.82rem; color: #6b7280; }
+    @media (max-width: 900px) {
+      .search-panel { grid-template-columns: 1fr 1fr; }
+      .how-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .buy-sell { grid-template-columns: 1fr; max-width: none; }
+      .search-panel { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">Auto<em>Market</em></a>
+      <nav class="nav" id="nav">
+        <a href="index.html" class="active">Home</a>
+        <a href="browse.html">Browse cars</a>
+        <a href="compare.html">Compare</a>
+        <a href="insights.html">Insights</a>
+        <a href="about.html">About</a>
+      </nav>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <div class="hero-badge">Buy and sell · Australia</div>
+            <h1>See a used car. Enquire. Book a viewing.</h1>
+            <p>See used cars, ask the owner about condition, and book a viewing. List your car so buyers can do the same. You cannot buy a car on this site.</p>
+            <div class="buy-sell">
+              <a class="buy" href="browse.html">Buy a car<small>Browse listings</small></a>
+              <a class="sell" href="sell.html">Sell a car<small>Create a listing</small></a>
+            </div>
+          </div>
+          <div class="hero-photo">
+            <img src="images/car.JPEG" alt="Used car for sale">
+          </div>
+        </div>
+
+        <div class="search-panel" id="searchPanel" style="grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr auto;">
+          <div class="search-field">
+            <label for="sQ">Search</label>
+            <div class="search-wrap">
+              <input id="sQ" type="search" placeholder="Type brand, model or suburb" autocomplete="off">
+              <div id="sSuggest" class="suggest" hidden></div>
+            </div>
+          </div>
+          <div class="search-field">
+            <label for="sBrand">Make</label>
+            <select id="sBrand"><option value="">All makes</option></select>
+          </div>
+          <div class="search-field">
+            <label for="sPrice">Price</label>
+            <select id="sPrice">
+              <option value="">Any price</option>
+              <option value="0-15000">Under $15,000</option>
+              <option value="15000-25000">$15,000 – $25,000</option>
+              <option value="25000-40000">$25,000 – $40,000</option>
+              <option value="40000-60000">$40,000 – $60,000</option>
+              <option value="60000-999999">$60,000+</option>
+            </select>
+          </div>
+          <div class="search-field">
+            <label for="sYear">Min year</label>
+            <select id="sYear"><option value="">Any year</option></select>
+          </div>
+          <div class="search-field">
+            <label for="sBody">Body type</label>
+            <select id="sBody"><option value="">Any body</option></select>
+          </div>
+          <button class="btn-search" id="btnSearch" style="align-self:end;">
+            <i class="bi bi-search"></i> Show cars
+          </button>
+        </div>
+
+        <div class="-note">
+          <strong>How to use:</strong> Search cars, open a listing, book a viewing, or list your own car so it appears in Recently added.
+        </div>
+      </div>
+    </section>
+
+    <div class="container" style="padding-top: 28px; padding-bottom: 40px;">
+      <h2 style="font-size:1.15rem; font-weight:800; margin-bottom:14px;">How it works</h2>
+      <div class="how-grid">
+        <div class="how-card">
+          <div class="step">1</div>
+          <h3>Search</h3>
+          <p>Filter cars by make, price, year and body type.</p>
+        </div>
+        <div class="how-card">
+          <div class="step">2</div>
+          <h3>Compare</h3>
+          <p>Put 2–3 cars side-by-side on price, kilometres and specs.</p>
+        </div>
+        <div class="how-card">
+          <div class="step">3</div>
+          <h3>Decide</h3>
+          <p>Use Insights and comparison, then buy through a dealer or listing site.</p>
+        </div>
+      </div>
+
+      <div class="stats-row" id="stats"></div>
+
+      <div id="listedBlock">
+        <div class="section-head">
+          <h2>Recently added</h2>
+          <a href="sell.html">Sell a car →</a>
+        </div>
+        <div class="car-grid" id="listedGrid"></div>
+      </div>
+
+      <div id="visitedBlock">
+        <div class="section-head">
+          <h2>Recently visited</h2>
+          <button type="button" id="clearVisited" class="btn-outline" style="flex:0;padding:6px 10px;">Clear</button>
+        </div>
+        <div class="car-grid" id="visitedGrid"></div>
+      </div>
+
+      <div class="section-head">
+        <h2>Sample cars</h2>
+        <a href="browse.html">Browse all →</a>
+      </div>
+      <div class="car-grid" id="featured"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <strong>AutoMarket</strong>
+          <p>A simple research tool using Australian used-car listing data. It does not sell cars.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="browse.html">Browse cars</a>
+          <a href="compare.html">Compare</a>
+          <a href="insights.html">Insights</a>
+        </div>
+        <div class="footer-col">
+          <h4>Info</h4>
+          
+          <a href="about.html">About</a>
+        </div>
+      </div>
+      <div class="footer-bottom">© 2026 AutoMarket · ICT807 Assessment 2 · </div>
+    </div>
+  </footer>
+
+  <script src="js/vehicles.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

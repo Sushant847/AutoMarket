@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sell a car | AutoMarket</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/polish.css">
+  <link rel="stylesheet" href="css/ux.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">Auto<em>Market</em></a>
+      <nav class="nav" id="nav"></nav>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <main id="main">
+    <div class="page-bar">
+      <div class="container">
+        <h1>Sell your car</h1>
+        <p>Place your used car for sale. It is added to the listing set, shows in Recently added, and buyers can book a viewing.</p>
+      </div>
+    </div>
+    <div class="container page-wrap" style="max-width:560px">
+      <div class="card-panel">
+        <p class="alert alert-warn">Demo only — listings are stored in this browser and are not published to a live marketplace.</p>
+        <form id="sellForm">
+          <div class="filter-group"><label for="brand">Brand *</label><input class="form-control" id="brand" required placeholder="Toyota"></div>
+          <div class="filter-group"><label for="model">Model *</label><input class="form-control" id="model" required placeholder="Corolla"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="filter-group"><label for="year">Year *</label><input class="form-control" id="year" type="number" required min="1990" max="2026" placeholder="2018"></div>
+            <div class="filter-group"><label for="price">Price ($) *</label><input class="form-control" id="price" type="number" required min="1" placeholder="15000"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="filter-group"><label for="km">Kilometres</label><input class="form-control" id="km" type="number" min="0" placeholder="80000"></div>
+            <div class="filter-group"><label for="fuel">Fuel</label>
+              <select class="form-control" id="fuel"><option value="">Select</option><option>Petrol</option><option>Diesel</option><option>Hybrid</option><option>Electric</option></select>
+            </div>
+          </div>
+          <div class="filter-group"><label for="trans">Transmission</label>
+            <select class="form-control" id="trans"><option value="">Select</option><option>Automatic</option><option>Manual</option></select>
+          </div>
+          <div class="filter-group"><label for="body">Body type</label><input class="form-control" id="body" placeholder="Hatchback, SUV"></div>
+          <div class="filter-group"><label for="suburbLoc">Location</label><input class="form-control" id="suburbLoc" placeholder="Sydney, NSW"></div>
+          <div class="filter-group"><label for="seller">Your name</label><input class="form-control" id="seller" placeholder="Alex"></div>
+          <div class="filter-group"><label for="desc">Description</label><textarea class="form-control" id="desc" rows="3" placeholder="Condition, extras..."></textarea></div>
+          <button class="btn-search" type="submit" style="width:100%;justify-content:center">Publish listing</button>
+        </form>
+        <div id="sellResult" hidden class="alert alert-ok" style="margin-top:14px"></div>
+      </div>
+    </div>
+  </main>
+  <footer class="footer"><div class="container"><div class="footer-bottom">&copy; 2026 AutoMarket</div></div></footer>
+  <script src="js/vehicles.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (!requireLogin("sell.html")) return;
+      var form = document.getElementById("sellForm");
+      if (!form) return;
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        try {
+          var val = function (id) {
+            var el = document.getElementById(id);
+            return el ? String(el.value || "").trim() : "";
+          };
+          var car = {
+            id: "local-" + Date.now(),
+            brand: val("brand"),
+            model: val("model"),
+            year: parseInt(val("year"), 10) || null,
+            price: parseInt(val("price"), 10) || 0,
+            kilometres: parseInt(val("km"), 10) || null,
+            fuelType: val("fuel"),
+            transmission: val("trans"),
+            bodyType: val("body"),
+            location: val("suburbLoc"),
+            title: val("year") + " " + val("brand") + " " + val("model"),
+            usedOrNew: "USED",
+            sellerName: val("seller"),
+            description: val("desc"),
+            isListing: true
+          };
+          if (!car.brand || !car.model || !car.price) {
+            alert("Please fill brand, model and price.");
+            return;
+          }
+          saveUserListing(car);
+          var box = document.getElementById("sellResult");
+          box.hidden = false;
+          box.innerHTML = "<strong>Listed.</strong> " + escapeHtml(car.brand) + " " + escapeHtml(car.model) +
+            " — " + formatPrice(car.price) + '. Opening homepage…';
+          window.setTimeout(function () { window.location.href = "index.html"; }, 700);
+        } catch (err) {
+          alert("Could not save listing: " + err.message);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

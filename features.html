@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Features | AutoMarket</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/polish.css">
+  <link rel="stylesheet" href="css/ux.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">Auto<em>Market</em></a>
+      <nav class="nav" id="nav"></nav>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <main id="main">
+    <div class="page-bar"><div class="container">
+      <h1>Vehicle characteristics</h1>
+      <p>How listings in the sample break down by fuel, body and transmission.</p>
+    </div></div>
+    <div class="container page-wrap">
+      <div class="grid" id="featGrid"></div>
+    </div>
+  </main>
+  <footer class="footer"><div class="container"><div class="footer-bottom">© 2026 AutoMarket</div></div></footer>
+  <script src="js/vehicles.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function group(field) {
+        const map = {};
+        allListings().forEach(v => {
+          const k = v[field] || "Not stated";
+          map[k] = (map[k] || 0) + 1;
+        });
+        return Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,8);
+      }
+      const box = document.getElementById("featGrid");
+      [["fuelType","Fuel"],["bodyType","Body"],["transmission","Transmission"]].forEach(([f,title])=>{
+        box.innerHTML += '<div class="card-panel"><h2>'+title+'</h2><ul>' +
+          group(f).map(([k,n])=>'<li>'+escapeHtml(k)+' — '+n+'</li>').join("") + "</ul></div>";
+      });
+    });
+  </script>
+</body>
+</html>
